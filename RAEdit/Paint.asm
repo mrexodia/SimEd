@@ -1337,11 +1337,13 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 					.if ecx
 						shr		ecx,4
 					.elseif eax
-						dec		esi
-						push	esi
-						inc		esi
-						push	[ebx].EDIT.hwnd
-						call	eax
+						;	dec		esi
+						;	push	esi
+						;	inc		esi
+						;	push	[ebx].EDIT.hwnd
+						;	call	eax
+						lea		ecx,[esi-1]
+						invoke BOOKMARKPAINTCALLBACKPTR ptr eax,[ebx].EDIT.hwnd,ecx
 						mov		ecx,eax
 					.endif
 					.if ecx
@@ -1680,11 +1682,13 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 					.if ecx
 						shr		ecx,4
 					.elseif eax
-						dec		esi
-						push	esi
-						inc		esi
-						push	[ebx].EDIT.hwnd
-						call	eax
+						;	dec		esi
+						;	push	esi
+						;	inc		esi
+						;	push	[ebx].EDIT.hwnd
+						;	call	eax
+						lea		ecx,[esi-1]
+						invoke BOOKMARKPAINTCALLBACKPTR ptr eax,[ebx].EDIT.hwnd,ecx
 						mov		ecx,eax
 					.endif
 					.if ecx
