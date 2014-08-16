@@ -298,8 +298,7 @@ Undo proc uses ebx,hMem:DWORD,hWin:DWORD
 	LOCAL	pt:POINT
 
 	mov		ebx,hMem
-	test	[ebx].EDIT.nMode,MODE_BLOCK
-	.if ZERO?
+	.if !([ebx].EDIT.nMode&MODE_BLOCK)
 		invoke DoUndo,ebx
 	.else
 		invoke DoUndo,ebx
@@ -321,8 +320,7 @@ Redo proc uses ebx,hMem:DWORD,hWin:DWORD
 	LOCAL	oldrects[2]:RECT
 
 	mov		ebx,hMem
-	test	[ebx].EDIT.nMode,MODE_BLOCK
-	.if ZERO?
+	.if !([ebx].EDIT.nMode&MODE_BLOCK)
 		invoke DoRedo,ebx
 	.else
 		invoke DoRedo,ebx
