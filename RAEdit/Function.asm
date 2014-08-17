@@ -668,7 +668,7 @@ NestedProc_OptSkipWord:
 		mov		ah,[edi+ecx+sizeof CHARS]
 		inc		ecx
 		.if al==VK_SPACE && (ah==VK_SPACE || ah==VK_TAB)
-			pop		eax
+			pop		eax ; stack_temp_used +1
 			retn
 		.endif
 		.if al>='a' && al<='z'
@@ -760,7 +760,7 @@ NestedProc_TestWord:
 			push	esi
 			call	NestedProc_TestWord
 			.if !eax
-				pop		eax
+				pop		eax ; stack_temp_used +1
 				xor		eax,eax
 				retn
 			.endif
@@ -777,7 +777,7 @@ NestedProc_TestWord:
 			.if !eax
 				call	NestedProc_SkipSpc
 				call	NestedProc_SkipCmnt
-				pop		eax
+				pop		eax ; stack_temp_used +1
 				mov		al,[edi+ecx+sizeof CHARS]
 				.if al==VK_RETURN || ecx==[edi].CHARS.len
 					xor		eax,eax
@@ -1870,13 +1870,15 @@ NestedProc_FillCMem:
 				inc		nChars
 			.endif
 			.if nChars>=MAXSTREAM
-				pushad
+				push ecx
+				push edx
 				.if [ebx].EDIT.funicode
 					call	NestedProc_StreamUnicode
 				.else
 					call	NestedProc_StreamAnsi
 				.endif
-				popad
+				pop edx
+				pop ecx
 				mov		edi,hCMem
 				mov		nChars,0
 			.endif
