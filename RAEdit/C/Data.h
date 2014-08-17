@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RegisterTypes.h"
+#include <richedit.h>
 #include "include/RAEdit.h"
 
 #define MAXLINEMEM				(8*1024)

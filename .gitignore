@@ -5,3 +5,9 @@ Lib/
 RAEdit.dll
 RAEditLib.exe
 SimEd.exe
+
+bin/
+obj/
+*.depend
+*.layout
+inc2h.exe
