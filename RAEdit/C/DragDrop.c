@@ -94,12 +94,12 @@ REG_T IDropTarget_DragEnter(REG_T pthis, REG_T lpDataObject, REG_T grfKeyState, 
 	eax = E_INVALIDARG;
 	if(esi)
 	{
-		eax = WindowFromPoint(pt.x, pt.y);
+		eax = WindowFromPoint(pt);
 		temp1 = eax;
 		edx = eax;
 		eax = ScreenToClient(edx, &pt);
 		eax = temp1;
-		eax = ChildWindowFromPoint(eax, pt.x, pt.y);
+		eax = ChildWindowFromPoint(eax, pt);
 		ebx = eax;
 		eax = GetWindowLong(ebx, 0);
 		if(eax)
@@ -109,7 +109,7 @@ REG_T IDropTarget_DragEnter(REG_T pthis, REG_T lpDataObject, REG_T grfKeyState, 
 			if(!(((EDIT *)ebx)->fstyle & STYLE_READONLY))
 			{
 				fmte.cfFormat = CF_TEXT;
-				fmte.lptd = NULL;
+				fmte.ptd = NULL;
 				fmte.dwAspect = DVASPECT_CONTENT;
 				fmte.lindex = -1;
 				fmte.tymed = TYMED_HGLOBAL;
@@ -159,12 +159,12 @@ REG_T IDropTarget_DragOver(REG_T pthis, REG_T grfKeyState, POINT pt, REG_T lpdwE
 	*(DWORD *)edx = DROPEFFECT_NONE;
 	if(((IDropTarget *)edi)->valid)
 	{
-		eax = WindowFromPoint(pt.x, pt.y);
+		eax = WindowFromPoint(pt);
 		temp1 = eax;
 		edx = eax;
 		eax = ScreenToClient(edx, &pt);
 		eax = temp1;
-		eax = ChildWindowFromPoint(eax, pt.x, pt.y);
+		eax = ChildWindowFromPoint(eax, pt);
 		ebx = eax;
 		eax = GetWindowLong(ebx, 0);
 		if(eax)
@@ -285,7 +285,7 @@ REG_T IDropTarget_Drop(REG_T pthis, REG_T lpDataObject, REG_T grfKeyState, POINT
 		{
 			ebx = eax;
 			fmte.cfFormat = CF_TEXT;
-			fmte.lptd = NULL;
+			fmte.ptd = NULL;
 			fmte.dwAspect = DVASPECT_CONTENT;
 			fmte.lindex = -1;
 			fmte.tymed = TYMED_HGLOBAL;
@@ -625,7 +625,7 @@ REG_T IDO_GetCanonicalFormatEtc(REG_T pthis, REG_T pFormatetcIn, REG_T pFormatet
 		esi++;
 		ecx--;
 	}
-	((FORMATETC *)edi)->lptd = NULL;
+	((FORMATETC *)edi)->ptd = NULL;
 	eax = DATA_S_SAMEFORMATETC;
 	return eax;
 
@@ -778,7 +778,7 @@ REG_T IEnumFORMATETC_Next(REG_T pthis, REG_T celt, REG_T rgelt, REG_T pceltFetch
 		((IEnumFORMATETC *)eax)->ifmt = ecx;
 		eax = rgelt;
 		((FORMATETC *)eax)->cfFormat = CF_TEXT;
-		((FORMATETC *)eax)->lptd = NULL;
+		((FORMATETC *)eax)->ptd = NULL;
 		((FORMATETC *)eax)->dwAspect = DVASPECT_CONTENT;
 		((FORMATETC *)eax)->lindex = -1;
 		((FORMATETC *)eax)->tymed = TYMED_HGLOBAL;

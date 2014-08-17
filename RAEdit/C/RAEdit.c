@@ -1,5 +1,8 @@
-#include <windows.h>
 #include "Data.h"
+#include <windows.h>
+
+REG_T RAWndProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam);
+REG_T RAEditProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 REG_T TimerProc(DWORD hWin, DWORD uMsg, DWORD idEvent, DWORD dwTime)
 {
@@ -24,7 +27,7 @@ REG_T TimerProc(DWORD hWin, DWORD uMsg, DWORD idEvent, DWORD dwTime)
 // Create a windowclass for the user control
 REG_T InstallRAEdit(HINSTANCE hInst, DWORD fGlobal)
 {
-	REG_T eax = 0, ecx, edx;
+	REG_T eax = 0, ecx, edx, ebx; //EBX might not work
 	REG_T temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
 	WNDCLASSEX wc;
 	DWORD hBmp;
@@ -44,7 +47,7 @@ REG_T InstallRAEdit(HINSTANCE hInst, DWORD fGlobal)
 	wc.hInstance = temp1;
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = &szRAEditClass;
+	wc.lpszClassName = "RAEdit";
 	eax = NULL;
 	wc.hIcon = eax;
 	wc.hIconSm = eax;
@@ -61,7 +64,7 @@ REG_T InstallRAEdit(HINSTANCE hInst, DWORD fGlobal)
 	wc.hInstance = temp1;
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = &szEditClassName;
+	wc.lpszClassName = "RAEditChild";
 	eax = NULL;
 	wc.hIcon = eax;
 	wc.hIconSm = eax;
@@ -152,7 +155,7 @@ REG_T UnInstallRAEdit(void)
 // Prefix ~		Word is case converted
 // Suffix +		Hilites rest of line with comment color
 // Suffix -		Hilites rest of line with text color
-// 
+//
 // nColor			gggg0sff cccccccc cccccccc cccccccc
 // g=Word group, s=Case sensitive, f=Font style, c=color
 REG_T SetHiliteWords(DWORD nColor, DWORD lpWords)
@@ -185,7 +188,7 @@ REG_T SetHiliteWords(DWORD nColor, DWORD lpWords)
 	{
 NxtWrd:
 		fEnd = 0;
-		if((BYTE)nColor[3] & 4)
+		if(((BYTE*)&nColor)[3] & 4)
 		{
 			// group is case sensitive. Toggles meaning of '^'
 			fEnd |= 3;
@@ -1505,7 +1508,7 @@ anon_4:
 			if(fControl && !fShift)
 			{
 				// End, split
-				eax = 1ffH;
+				eax = 0x1ff;
 				if(((EDIT *)ebx)->fsplitt)
 				{
 					eax = 0;
@@ -1631,7 +1634,7 @@ anon_4:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				eax = Paste(ebx, hWin, NULL);
 				nUndoid++;
@@ -1685,7 +1688,7 @@ anon_4:
 						eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 						if(eax!=0)
 						{
-							goto ErrBeep;
+							MessageBeep(MB_ICONHAND);eax = 0;return;
 						} // endif
 						nUndoid++;
 						eax = DeleteSelection(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
@@ -1722,7 +1725,7 @@ anon_4:
 						eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, eax);
 						if(eax!=0)
 						{
-							goto ErrBeep;
+							MessageBeep(MB_ICONHAND);eax = 0;return;
 						} // endif
 						eax = GetChar(ebx, ((EDIT *)ebx)->cpMin);
 						if(RBYTE_LOW(eax)==VK_RETURN)
@@ -1763,7 +1766,7 @@ anon_4:
 					eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 					if(eax!=0)
 					{
-						goto ErrBeep;
+						MessageBeep(MB_ICONHAND);eax = 0;return;
 					} // endif
 					nUndoid++;
 					eax = ((EDIT *)ebx)->blrg.clMin;
@@ -1805,7 +1808,7 @@ anon_4:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				nUndoid++;
 				eax = Cut(ebx, hWin);
@@ -1853,7 +1856,7 @@ anon_4:
 					eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 					if(eax!=0)
 					{
-						goto ErrBeep;
+						MessageBeep(MB_ICONHAND);eax = 0;return;
 					} // endif
 					nUndoid++;
 					eax = DeleteSelection(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
@@ -2044,7 +2047,7 @@ REG_T RAEditProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 			if(eax!=0)
 			{
-				goto ErrBeep;
+				MessageBeep(MB_ICONHAND);eax = 0;return;
 			} // endif
 			nUndoid++;
 			eax = Cut(ebx, hWin);
@@ -2056,7 +2059,7 @@ REG_T RAEditProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 			if(eax!=0)
 			{
-				goto ErrBeep;
+				MessageBeep(MB_ICONHAND);eax = 0;return;
 			} // endif
 			nUndoid++;
 			eax = Paste(ebx, hWin, NULL);
@@ -2122,7 +2125,7 @@ REG_T RAEditProc(HWND hWin, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				eax = ((EDIT *)ebx)->cpMin;
 				eax -= ((EDIT *)ebx)->cpMax;
@@ -2209,7 +2212,7 @@ anon_5:
 					eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 					if(eax!=0)
 					{
-						goto ErrBeep;
+						MessageBeep(MB_ICONHAND);eax = 0;return;
 					} // endif
 					eax = ((EDIT *)ebx)->cpMin;
 					if(eax!=((EDIT *)ebx)->cpMax)
@@ -2229,7 +2232,7 @@ anon_5:
 						eax = IsSelectionLocked(ebx, eax, eax);
 						if(eax!=0)
 						{
-							goto ErrBeep;
+							MessageBeep(MB_ICONHAND);eax = 0;return;
 						} // endif
 						((EDIT *)ebx)->cpMin--;
 						((EDIT *)ebx)->cpMax--;
@@ -2302,7 +2305,7 @@ anon_5:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				temp1 = esi;
 				nUndoid++;
@@ -2411,7 +2414,8 @@ anon_5:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+				    MessageBeep(MB_ICONHAND);eax = 0;return;
+					//MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				eax = ((EDIT *)ebx)->blrg.clMin;
 				if(eax==((EDIT *)ebx)->blrg.clMax && eax)
@@ -3213,6 +3217,7 @@ anon_5:
 					} // endif
 					((RAEDT *)esi)->cpy = eax;
 anon_6:
+    eax=eax;
 				} // endif
 				eax = temp1;
 				eax -= ((RAEDT *)esi)->cpy;
@@ -4624,7 +4629,7 @@ anon_7:
 			eax += ((EDIT *)ebx)->linenrwt;
 			if(eax<=pt.x)
 			{
-				eax = ChildWindowFromPoint(hWin, pt.x, pt.y);
+				eax = ChildWindowFromPoint(hWin, pt);
 				if(eax==((EDIT *)ebx)->edta.hwnd)
 				{
 					esi = &((EDIT *)ebx)->edta;
@@ -4824,7 +4829,7 @@ anon_7:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				nUndoid++;
 				eax = ((EDIT *)ebx)->blrg.lnMin;
@@ -4904,7 +4909,7 @@ anon_7:
 				eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 				if(eax!=0)
 				{
-					goto ErrBeep;
+					MessageBeep(MB_ICONHAND);eax = 0;return;
 				} // endif
 				if(wParam==CONVERT_TABTOSPACE || wParam==CONVERT_SPACETOTAB)
 				{
@@ -5810,7 +5815,7 @@ anon_8:
 			eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 			if(eax!=0)
 			{
-				goto ErrBeep;
+				MessageBeep(MB_ICONHAND);eax = 0;return;
 			} // endif
 			nUndoid++;
 			eax = DeleteSelection(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
@@ -5940,7 +5945,7 @@ anon_8:
 		eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 		if(eax!=0)
 		{
-			goto ErrBeep;
+			MessageBeep(MB_ICONHAND);eax = 0;return;
 		} // endif
 		nUndoid++;
 		eax = Paste(ebx, ((RAEDT *)esi)->hwnd, NULL);
@@ -5955,7 +5960,7 @@ anon_8:
 		eax = IsSelectionLocked(ebx, ((EDIT *)ebx)->cpMin, ((EDIT *)ebx)->cpMax);
 		if(eax!=0)
 		{
-			goto ErrBeep;
+			MessageBeep(MB_ICONHAND);eax = 0;return;
 		} // endif
 		nUndoid++;
 		if(!(((EDIT *)ebx)->nMode&MODE_BLOCK))
@@ -6609,9 +6614,9 @@ ErrBeep:
 		REG_T temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
 		ti.cbSize = sizeof(TOOLINFO);
 		ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-		ti.hWnd = 0;
+		ti.hwnd = 0;
 		ti.uId = eax;
-		ti.hInst = 0;
+		ti.hinst = 0;
 		ti.lpszText = edx;
 		eax = SendMessage(((EDIT *)ebx)->htt, TTM_DELTOOL, NULL, &ti);
 		eax = SendMessage(((EDIT *)ebx)->htt, TTM_ADDTOOL, NULL, &ti);

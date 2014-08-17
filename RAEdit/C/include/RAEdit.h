@@ -260,7 +260,7 @@ DWORD line; //Line number
 DWORD cpLine; //Character position of first character
 DWORD lpLine; //Pointer to line
 DWORD nlines; //Total number of lines
-DWORD nhiDWORDen; //Total number of hinhiDWORDen;en lines
+DWORD nhidden; //Total number of hinhiDWORDen;en lines
 DWORD fchanged; //TRUE if changed since last
 DWORD npage; //Page number
 DWORD nWordGroup; //Hilite word group(0-15)

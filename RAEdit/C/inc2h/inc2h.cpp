@@ -85,9 +85,9 @@ bool convertlines(vector<string>* inclines, vector<string>* hlines)
             curLine.erase(0, 1);
         repl(curLine, "\t", " "); //handle tabbing
         while(repl(curLine, "  ", " ")); //handle duplicate spaces
-        repl(curLine, "dd", "DWORD");
-        repl(curLine, "dw", "WORD");
-        repl(curLine, "db", "BYTE");
+        repl(curLine, " dd", " DWORD");
+        repl(curLine, " dw", " WORD");
+        repl(curLine, " db", " BYTE");
         if(startswith(curLine, "//")) //comment line
         {
         }
@@ -128,7 +128,7 @@ bool convertlines(vector<string>* inclines, vector<string>* hlines)
         else if(state==_struct) //in struct
         {
             repl(curLine, " <?>", "");
-            repl(curLine, " ? ", " ");
+            repl(curLine, " ?", "");
             size_t space=curLine.find(' ');
             string name=curLine.substr(0, space);
             string type=curLine.substr(space+1);

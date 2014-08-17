@@ -1,7 +1,10 @@
 #pragma once
+#define WINVER 0x0501
 
 #include "RegisterTypes.h"
 #include <richedit.h>
+#include <commctrl.h>
+#include <windows.h>
 #include "include/RAEdit.h"
 
 #define MAXLINEMEM				(8*1024)

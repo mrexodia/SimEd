@@ -1,7 +1,7 @@
 #include <windows.h>
 #include "Data.h"
 
-extern "C" DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hInst, DWORD reason, LPVOID reserved1)
+extern "C" __declspec(DLL_EXPORT) BOOL APIENTRY DllMain(HINSTANCE hInst, DWORD reason, LPVOID reserved1)
 {
 	REG_T eax = 0, ecx, edx;
 	REG_T temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
@@ -23,10 +23,10 @@ extern "C" DLL_EXPORT BOOL APIENTRY DllMain(HINSTANCE hInst, DWORD reason, LPVOI
 // In RadASM.ini section [CustCtrl], x=CustCtrl.dll,y
 // x is next free number.
 // y is number of controls in the dll. In this case there is only one control.
-// 
+//
 // x=RAEdit.dll,1
 // Copy RAEdit.dll to c:\windows\system
-// 
+//
 REG_T GetDef(DWORD nInx)
 {
 	REG_T eax = 0, ecx, edx;

@@ -1,6 +1,9 @@
 #include <windows.h>
 #include "Data.h"
 
+typedef REG_T (*EDITSTREAMCALLBACKPROTO)(DWORD dwCookie, DWORD pbBuff, DWORD cb, DWORD pcb);
+typedef EDITSTREAMCALLBACKPROTO EDITSTREAMCALLBACKPTR;
+
 REG_T FindTheText(DWORD hMem, DWORD pFind, DWORD fMC, DWORD fWW, DWORD fWhiteSpace, DWORD cpMin, DWORD cpMax, DWORD fDir)
 {
 	REG_T eax = 0, ecx, edx, ebx, esi, edi;
@@ -149,6 +152,11 @@ REG_T FindTheText(DWORD hMem, DWORD pFind, DWORD fMC, DWORD fWW, DWORD fWhiteSpa
 	} // endif
 	edx = nIgnore;
 	return eax;
+
+	void Nf(void)
+    {
+        eax=-1;
+    }
 
 	void TstFind(void)
 	{
@@ -468,7 +476,8 @@ REG_T FindTextEx(DWORD hMem, DWORD fFlag, DWORD lpFindTextEx)
 
 REG_T IsLine(DWORD hMem, DWORD nLine, DWORD lpszTest)
 {
-	REG_T eax = 0, ecx, edx, ebx, esi, edi;
+    MessageBoxA(0, "IsLine is a broken function! Fix 'esp'", "Error", MB_ICONERROR|MB_SYSTEMMODAL);
+	REG_T eax = 0, ecx, edx, ebx, esi, edi, esp;
 	REG_T temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
 	DWORD tmpesi;
 	DWORD fCmnt;
@@ -740,7 +749,7 @@ Nxt:
 			while(ecx<((CHARS *)edi)->len)
 			{
 				edx = 0;
-				if(RBYTE_LOW(eax)==[edi+ecx+sizeof(CHARS)])
+				if(RBYTE_LOW(eax)==RBYTE_LOW(edi+ecx+sizeof(CHARS)))
 				{
 					break;
 				} // endif
@@ -784,7 +793,7 @@ Nf:
 		ecx++;
 		while(ecx<((CHARS *)edi)->len)
 		{
-			if(RBYTE_LOW(eax)==[edi+ecx+sizeof(CHARS)])
+			if(RBYTE_LOW(eax)==RBYTE_LOW(edi+ecx+sizeof(CHARS)))
 			{
 				break;
 			} // endif
@@ -830,7 +839,7 @@ Nf:
 			if(RBYTE_LOW(eax)==VK_TAB || RBYTE_LOW(eax)==' ' || RBYTE_LOW(eax)==':' || (RBYTE_LOW(eax)=='*' && ((EDIT *)ebx)->ccmntblocks!=1))
 			{
 				ecx++;
-				goto NestedProc_SkipSpc;
+				SkipSpc(); //TODO: ?????
 			}
 			else if(RBYTE_LOW(eax)=='"')
 			{
@@ -839,7 +848,7 @@ Nf:
 				{
 					ecx++;
 				} // endif
-				goto NestedProc_SkipSpc;
+				SkipSpc(); //TODO: ?????
 			}
 			else if(RBYTE_LOW(eax)==(BYTE)bracketcont)
 			{
@@ -858,7 +867,7 @@ Nf:
 							goto SkipSpcNf;
 						} // endif
 						ecx = 0;
-						goto NestedProc_SkipSpc;
+						SkipSpc(); //TODO: ????
 					}
 					else
 					{
@@ -876,7 +885,7 @@ Nf:
 		return;
 SkipSpcNf:
 		esp = espsave;
-		goto Nf;
+		Nf(); //TODO: ?????
 
 	}
 
@@ -930,7 +939,7 @@ SkipSpcNf:
 				if(RBYTE_LOW(eax)==CT_CHAR || RBYTE_LOW(eax)==CT_HICHAR)
 				{
 					ecx++;
-					goto NestedProc_SkipWord;
+					SkipWord(); //TODO: what should happen here?
 				}
 				else
 				{
@@ -953,7 +962,12 @@ SkipSpcNf:
 		return;
 
 anon_1:
-		esi++;
+		_anon_1();
+	}
+
+	void _anon_1(void) //TODO: ?????
+	{
+        esi++;
 		ecx++;
 		RBYTE_LOW(eax) = *(BYTE *)esi;
 		if(ecx>=((CHARS *)edi)->len && RBYTE_LOW(eax))
@@ -963,6 +977,7 @@ anon_1:
 			return;
 		} // endif
 	}
+
 
 	void TestWord(void)
 	{
@@ -980,12 +995,12 @@ anon_1:
 				SkipSpc();
 				SkipCmnt();
 				ecx--;
-				goto anon_1;
+				_anon_1();
 			}
 			else if(RBYTE_LOW(eax)=='(')
 			{
 				ecx--;
-				goto anon_1;
+				_anon_1();
 			}
 			else
 			{
@@ -1138,7 +1153,7 @@ anon_1:
 			SkipCmnt();
 			esi++;
 			esi++;
-			goto NestedProc_TestWord;
+			TestWord(); //TODO: ?????
 		} // endif
 		RBYTE_HIGH(eax) = *(BYTE *)(edi+ecx+sizeof(CHARS));
 		if(RBYTE_LOW(eax)>='a' && RBYTE_LOW(eax)<='z')
@@ -1155,7 +1170,7 @@ anon_1:
 		} // endif
 		if(RBYTE_LOW(eax)==RBYTE_HIGH(eax))
 		{
-			goto anon_1;
+			_anon_1();
 		} // endif
 		eax = 0;
 		eax--;
